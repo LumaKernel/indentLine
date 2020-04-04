@@ -98,8 +98,8 @@ function! s:SetConcealOption()
         let b:indentLine_ConcealOptionSet = 1
         let b:indentLine_original_concealcursor = &l:concealcursor
         let b:indentLine_original_conceallevel = &l:conceallevel
-        " let &l:concealcursor = exists("g:indentLine_concealcursor") ? g:indentLine_concealcursor : "inc"
-        " let &l:conceallevel = exists("g:indentLine_conceallevel") ? g:indentLine_conceallevel : "2"
+        let &l:concealcursor = exists("g:indentLine_concealcursor") ? g:indentLine_concealcursor : "inc"
+        let &l:conceallevel = exists("g:indentLine_conceallevel") ? g:indentLine_conceallevel : "2"
     endif
 endfunction
 
@@ -214,7 +214,7 @@ function! s:AutoResetWidth()
     let l:enable = get(
                     \ b:,
                     \ 'indentLine_enabled',
-                    \ get(g:, 'indentLine_enabled', 1)
+                    \ get(g:, 'indentLine_enabled', 1) && s:Filter()
                     \)
 
     let g:indentLine_autoResetWidth = get(g:, 'indentLine_autoResetWidth', 1)
@@ -238,8 +238,6 @@ function! s:Filter()
         return 0
     endif
 
-    echom &filetype
-    echom index(g:indentLine_fileType, &filetype) == -1
     if len(g:indentLine_fileType) != 0 && index(g:indentLine_fileType, &filetype) == -1
         return 0
     endif
@@ -271,6 +269,7 @@ function! s:Setup()
         call s:InitColor()
     endif
 
+    echom string(['il', s:Filter(), exists("b:indentLine_enabled") && b:indentLine_enabled])
     if s:Filter() && g:indentLine_enabled || exists("b:indentLine_enabled") && b:indentLine_enabled
         call s:IndentLinesEnable()
     endif
