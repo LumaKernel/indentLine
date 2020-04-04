@@ -27,7 +27,6 @@ let g:indentLine_defaultGroup = get(g:, 'indentLine_defaultGroup', "")
 let g:indentLine_faster = get(g:, 'indentLine_faster', 0)
 let g:indentLine_leadingSpaceChar = get(g:, 'indentLine_leadingSpaceChar', (&encoding ==# "utf-8" && &term isnot# "linux" ? '˰' : '.'))
 let g:indentLine_leadingSpaceEnabled = get(g:, 'indentLine_leadingSpaceEnabled', 0)
-let g:indentLine_mysyntaxfile = fnamemodify(expand("<sfile>"), ":p:h:h")."/syntax/indentLine.vim"
 
 "{{{1 function! s:InitColor()
 function! s:InitColor()
