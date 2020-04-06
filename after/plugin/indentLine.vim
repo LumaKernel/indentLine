@@ -6,7 +6,7 @@
 scriptencoding utf-8
 
 if !has("conceal") || exists("g:indentLine_loaded")
-    finish
+  finish
 endif
 let g:indentLine_loaded = 1
 
@@ -30,316 +30,316 @@ let g:indentLine_leadingSpaceEnabled = get(g:, 'indentLine_leadingSpaceEnabled',
 
 "{{{1 function! s:InitColor()
 function! s:InitColor()
-    if !g:indentLine_setColors
-        return
-    endif
+  if !g:indentLine_setColors
+    return
+  endif
 
-    let default_term_bg = "NONE"
-    let default_gui_bg  = "NONE"
+  let default_term_bg = "NONE"
+  let default_gui_bg  = "NONE"
+  if &background ==# "light"
+    let default_term_fg = 249
+    let default_gui_fg = "Grey70"
+  else
+    let default_term_fg = 239
+    let default_gui_fg = "Grey30"
+  endif
+
+  if g:indentLine_defaultGroup != ""
+    let default_id = synIDtrans(hlID(g:indentLine_defaultGroup))
+    let default_term_fg = synIDattr(default_id, "fg", "cterm") == "" ? default_term_fg :  synIDattr(default_id, "fg", "cterm")
+    let default_term_bg = synIDattr(default_id, "bg", "cterm") == "" ? default_term_bg :  synIDattr(default_id, "bg", "cterm")
+    let default_gui_fg = synIDattr(default_id, "fg", "gui") == "" ? default_gui_fg :  synIDattr(default_id, "fg", "gui")
+    let default_gui_bg = synIDattr(default_id, "bg", "gui") == "" ? default_gui_bg :  synIDattr(default_id, "bg", "gui")
+  endif
+
+  if !exists("g:indentLine_color_term")
+    let term_color = default_term_fg
+  else
+    let term_color = g:indentLine_color_term
+  endif
+
+  if !exists("g:indentLine_bgcolor_term")
+    let term_bgcolor = default_term_bg
+  else
+    let term_bgcolor = g:indentLine_bgcolor_term
+  endif
+
+  if !exists("g:indentLine_color_gui")
+    let gui_color = default_gui_fg
+  else
+    let gui_color = g:indentLine_color_gui
+  endif
+
+  if !exists("g:indentLine_bgcolor_gui")
+    let gui_bgcolor = default_gui_bg
+  else
+    let gui_bgcolor = g:indentLine_bgcolor_gui
+  endif
+
+  execute "highlight Conceal cterm=NONE ctermfg=" . term_color . " ctermbg=" . term_bgcolor
+  execute "highlight Conceal gui=NONE guifg=" . gui_color .  " guibg=" . gui_bgcolor
+
+  if &term ==# "linux"
     if &background ==# "light"
-        let default_term_fg = 249
-        let default_gui_fg = "Grey70"
+      let tty_color = exists("g:indentLine_color_tty_light") ? g:indentLine_color_tty_light : 4
     else
-        let default_term_fg = 239
-        let default_gui_fg = "Grey30"
+      let tty_color = exists("g:indentLine_color_tty_dark") ? g:indentLine_color_tty_dark : 2
     endif
-
-    if g:indentLine_defaultGroup != ""
-        let default_id = synIDtrans(hlID(g:indentLine_defaultGroup))
-        let default_term_fg = synIDattr(default_id, "fg", "cterm") == "" ? default_term_fg :  synIDattr(default_id, "fg", "cterm")
-        let default_term_bg = synIDattr(default_id, "bg", "cterm") == "" ? default_term_bg :  synIDattr(default_id, "bg", "cterm")
-        let default_gui_fg = synIDattr(default_id, "fg", "gui") == "" ? default_gui_fg :  synIDattr(default_id, "fg", "gui")
-        let default_gui_bg = synIDattr(default_id, "bg", "gui") == "" ? default_gui_bg :  synIDattr(default_id, "bg", "gui")
-    endif
-
-    if !exists("g:indentLine_color_term")
-        let term_color = default_term_fg
-    else
-        let term_color = g:indentLine_color_term
-    endif
-
-    if !exists("g:indentLine_bgcolor_term")
-        let term_bgcolor = default_term_bg
-    else
-        let term_bgcolor = g:indentLine_bgcolor_term
-    endif
-
-    if !exists("g:indentLine_color_gui")
-        let gui_color = default_gui_fg
-    else
-        let gui_color = g:indentLine_color_gui
-    endif
-
-    if !exists("g:indentLine_bgcolor_gui")
-        let gui_bgcolor = default_gui_bg
-    else
-        let gui_bgcolor = g:indentLine_bgcolor_gui
-    endif
-
-    execute "highlight Conceal cterm=NONE ctermfg=" . term_color . " ctermbg=" . term_bgcolor
-    execute "highlight Conceal gui=NONE guifg=" . gui_color .  " guibg=" . gui_bgcolor
-
-    if &term ==# "linux"
-        if &background ==# "light"
-            let tty_color = exists("g:indentLine_color_tty_light") ? g:indentLine_color_tty_light : 4
-        else
-            let tty_color = exists("g:indentLine_color_tty_dark") ? g:indentLine_color_tty_dark : 2
-        endif
-        execute "highlight Conceal cterm=bold ctermfg=" . tty_color .  " ctermbg=NONE"
-    endif
+    execute "highlight Conceal cterm=bold ctermfg=" . tty_color .  " ctermbg=NONE"
+  endif
 endfunction
 
 "{{{1 function! s:SetConcealOption()
 function! s:SetConcealOption()
-    if !g:indentLine_setConceal
-        return
+  if !g:indentLine_setConceal
+    return
+  endif
+  if !(exists("b:indentLine_ConcealOptionSet") && b:indentLine_ConcealOptionSet)
+    let b:indentLine_ConcealOptionSet = 1
+    let b:indentLine_original_conceallevel = &l:conceallevel
+    if b:indentLine_original_conceallevel ==# "0"
+      let &l:conceallevel = "2"
     endif
-    if !(exists("b:indentLine_ConcealOptionSet") && b:indentLine_ConcealOptionSet)
-        let b:indentLine_ConcealOptionSet = 1
-        let b:indentLine_original_conceallevel = &l:conceallevel
-        let &l:conceallevel = exists("g:indentLine_conceallevel") ? g:indentLine_conceallevel : "2"
-    endif
+  endif
 endfunction
 
 "{{{1 function! s:ResetConcealOption()
 function! s:ResetConcealOption()
-    if exists("b:indentLine_ConcealOptionSet") && b:indentLine_ConcealOptionSet
-        if exists("b:indentLine_original_conceallevel")
-            let &l:conceallevel = b:indentLine_original_conceallevel
-        endif
-        let b:indentLine_ConcealOptionSet = 0
+  if exists("b:indentLine_ConcealOptionSet") && b:indentLine_ConcealOptionSet
+    if exists("b:indentLine_original_conceallevel")
+          \ && b:indentLine_original_conceallevel ==# "0"
+      let &l:conceallevel = b:indentLine_original_conceallevel
     endif
+    let b:indentLine_ConcealOptionSet = 0
+  endif
 endfunction
 
 "{{{1 function! s:DisableOnDiff()
 function! s:DisableOnDiff()
-    if &diff
-        call s:IndentLinesDisable()
-        call s:LeadingSpaceDisable()
-    endif
+  if &diff
+    call s:IndentLinesDisable()
+    call s:LeadingSpaceDisable()
+  endif
 endfunction
 
 "{{{1 function! s:VimEnter()
 function! s:VimEnter()
-    let init_winnr = winnr()
-    noautocmd windo call s:DisableOnDiff()
-    noautocmd exec init_winnr . "wincmd w"
+  let init_winnr = winnr()
+  noautocmd windo call s:DisableOnDiff()
+  noautocmd exec init_winnr . "wincmd w"
 endfunction
 
 "{{{1 function! s:ToggleOnDiff()
 function! s:ToggleOnDiff()
-    if &diff
-        call s:IndentLinesDisable()
-        call s:LeadingSpaceDisable()
-    else
-        call s:Setup()
-    endif
+  if &diff
+    call s:IndentLinesDisable()
+    call s:LeadingSpaceDisable()
+  else
+    call s:Setup()
+  endif
 endfunction
 
 "{{{1 function! s:IndentLinesEnable()
 function! s:IndentLinesEnable()
-    if exists("b:indentLine_enabled") && b:indentLine_enabled == 0
-        return
+  if exists("b:indentLine_enabled") && b:indentLine_enabled == 0
+    return
+  endif
+
+  if !exists("w:indentLine_indentLineId")
+    let w:indentLine_indentLineId = []
+  endif
+
+  call s:SetConcealOption()
+
+  if g:indentLine_showFirstIndentLevel
+    call add(w:indentLine_indentLineId, matchadd('Conceal', '^ ', 0, -1, {'conceal': g:indentLine_first_char}))
+  endif
+
+  let space = &l:shiftwidth == 0 ? &l:tabstop : &l:shiftwidth
+  let n = len(g:indentLine_char_list)
+  let level = 0
+  for i in range(space+1, space * g:indentLine_indentLevel + 1, space)
+    if n > 0
+      let char = g:indentLine_char_list[level % n]
+      let level += 1
+    else
+      let char = g:indentLine_char
     endif
-
-    if !exists("w:indentLine_indentLineId")
-        let w:indentLine_indentLineId = []
-    endif
-
-    call s:SetConcealOption()
-
-    if g:indentLine_showFirstIndentLevel
-        call add(w:indentLine_indentLineId, matchadd('Conceal', '^ ', 0, -1, {'conceal': g:indentLine_first_char}))
-    endif
-
-    let space = &l:shiftwidth == 0 ? &l:tabstop : &l:shiftwidth
-    let n = len(g:indentLine_char_list)
-    let level = 0
-    for i in range(space+1, space * g:indentLine_indentLevel + 1, space)
-        if n > 0
-            let char = g:indentLine_char_list[level % n]
-            let level += 1
-        else
-            let char = g:indentLine_char
-        endif
-        call add(w:indentLine_indentLineId, matchadd('Conceal', '^\s\+\zs\%'.i.'v ', 0, -1, {'conceal': char}))
-    endfor
+    call add(w:indentLine_indentLineId, matchadd('Conceal', '^\s\+\zs\%'.i.'v ', 0, -1, {'conceal': char}))
+  endfor
 endfunction
 
 "{{{1 function! s:IndentLinesDisable()
 function! s:IndentLinesDisable()
-    if exists("w:indentLine_indentLineId") && ! empty(w:indentLine_indentLineId)
-        for id in w:indentLine_indentLineId
-            try
-                call matchdelete(id)
-            catch /^Vim\%((\a\+)\)\=:E80[23]/
-            endtry
-        endfor
-        let w:indentLine_indentLineId = []
-    endif
+  if exists("w:indentLine_indentLineId") && ! empty(w:indentLine_indentLineId)
+    for id in w:indentLine_indentLineId
+      try
+        call matchdelete(id)
+      catch /^Vim\%((\a\+)\)\=:E80[23]/
+      endtry
+    endfor
+    let w:indentLine_indentLineId = []
+  endif
 
-    call s:ResetConcealOption()
+  call s:ResetConcealOption()
 endfunction
 
 "{{{1 function! s:IndentLinesToggle()
 function! s:IndentLinesToggle()
-    if exists("w:indentLine_indentLineId") && ! empty(w:indentLine_indentLineId)
-        let b:indentLine_enabled = 0
-        call s:IndentLinesDisable()
-    else
-        let b:indentLine_enabled = 1
-        call s:IndentLinesEnable()
-    endif
+  if exists("w:indentLine_indentLineId") && ! empty(w:indentLine_indentLineId)
+    let b:indentLine_enabled = 0
+    call s:IndentLinesDisable()
+  else
+    let b:indentLine_enabled = 1
+    call s:IndentLinesEnable()
+  endif
 endfunction
 
 "{{{1 function! s:ResetWidth(...)
 function! s:ResetWidth(...)
-    if 0 < a:0
-        noautocmd let &l:shiftwidth = a:1
-    endif
+  if 0 < a:0
+    noautocmd let &l:shiftwidth = a:1
+  endif
 
-    let b:indentLine_enabled = 1
-    call s:IndentLinesDisable()
-    call s:IndentLinesEnable()
+  let b:indentLine_enabled = 1
+  call s:IndentLinesDisable()
+  call s:IndentLinesEnable()
 endfunction
 
 "{{{1 function! s:AutoResetWidth()
 function! s:AutoResetWidth()
 
-    let l:enable = get(
-                    \ b:,
-                    \ 'indentLine_enabled',
-                    \ get(g:, 'indentLine_enabled', 1) && s:Filter()
-                    \)
+  let l:enable = get(
+        \ b:,
+        \ 'indentLine_enabled',
+        \ get(g:, 'indentLine_enabled', 1) && s:Filter()
+        \)
 
-    let g:indentLine_autoResetWidth = get(g:, 'indentLine_autoResetWidth', 1)
+  let g:indentLine_autoResetWidth = get(g:, 'indentLine_autoResetWidth', 1)
 
-    if l:enable != 1 || g:indentLine_autoResetWidth != 1
-        return
-    endif
+  if l:enable != 1 || g:indentLine_autoResetWidth != 1
+    return
+  endif
 
-    let b:indentLine_enabled = l:enable
-    call s:IndentLinesDisable()
-    call s:IndentLinesEnable()
+  let b:indentLine_enabled = l:enable
+  call s:IndentLinesDisable()
+  call s:IndentLinesEnable()
 endfunction
 
 "{{{1 function! s:Filter()
 function! s:Filter()
-    if index(g:indentLine_fileTypeExclude, &filetype) != -1
-        return 0
+  if index(g:indentLine_fileTypeExclude, &filetype) != -1
+    return 0
+  endif
+
+  if index(g:indentLine_bufTypeExclude, &buftype) != -1
+    return 0
+  endif
+
+  if len(g:indentLine_fileType) != 0 && index(g:indentLine_fileType, &filetype) == -1
+    return 0
+  endif
+
+  for name in g:indentLine_bufNameExclude
+    if matchstr(bufname(''), name) == bufname('')
+      return 0
     endif
+  endfor
 
-    if index(g:indentLine_bufTypeExclude, &buftype) != -1
-        return 0
-    endif
-
-    if len(g:indentLine_fileType) != 0 && index(g:indentLine_fileType, &filetype) == -1
-        return 0
-    endif
-
-    for name in g:indentLine_bufNameExclude
-        if matchstr(bufname(''), name) == bufname('')
-            return 0
-        endif
-    endfor
-
-    return 1
+  return 1
 endfunction
 
 "{{{1 function! s:Disable()
 function! s:Disable()
-    if exists("b:indentLine_enabled") && b:indentLine_enabled
-        return
-    elseif exists("b:indentLine_leadingSpaceEnabled") && b:indentLine_leadingSpaceEnabled
-        return
-    elseif s:Filter() == 0
-        call s:IndentLinesDisable()
-        call s:LeadingSpaceDisable()
-    endif
+  if exists("b:indentLine_enabled") && b:indentLine_enabled
+    return
+  elseif exists("b:indentLine_leadingSpaceEnabled") && b:indentLine_leadingSpaceEnabled
+    return
+  elseif s:Filter() == 0
+    call s:IndentLinesDisable()
+    call s:LeadingSpaceDisable()
+  endif
 endfunction
 
 "{{{1 function! s:Setup()
 function! s:Setup()
-    if &filetype ==# ""
-        call s:InitColor()
-    endif
+  if &filetype ==# ""
+    call s:InitColor()
+  endif
 
-    echom string(['il', s:Filter(), exists("b:indentLine_enabled") && b:indentLine_enabled])
-    if s:Filter() && g:indentLine_enabled || exists("b:indentLine_enabled") && b:indentLine_enabled
-        call s:IndentLinesEnable()
-    endif
+  if s:Filter() && g:indentLine_enabled || exists("b:indentLine_enabled") && b:indentLine_enabled
+    call s:IndentLinesEnable()
+  endif
 
-    if s:Filter() && g:indentLine_leadingSpaceEnabled || exists("b:indentLine_leadingSpaceEnabled") && b:indentLine_leadingSpaceEnabled
-        call s:LeadingSpaceEnable()
-    endif
+  if s:Filter() && g:indentLine_leadingSpaceEnabled || exists("b:indentLine_leadingSpaceEnabled") && b:indentLine_leadingSpaceEnabled
+    call s:LeadingSpaceEnable()
+  endif
 endfunction
 
 "{{{1 function! s:LeadingSpaceEnable()
 function! s:LeadingSpaceEnable()
-    if exists("b:indentLine_leadingSpaceEnabled") && b:indentLine_leadingSpaceEnabled == 0
-        return
-    endif
+  if exists("b:indentLine_leadingSpaceEnabled") && b:indentLine_leadingSpaceEnabled == 0
+    return
+  endif
 
-    if !exists("w:indentLine_leadingSpaceId")
-        let w:indentLine_leadingSpaceId = []
-    endif
+  if !exists("w:indentLine_leadingSpaceId")
+    let w:indentLine_leadingSpaceId = []
+  endif
 
-    call s:SetConcealOption()
+  call s:SetConcealOption()
 
-    call add(w:indentLine_leadingSpaceId, matchadd('Conceal', '\%(^\s*\)\@<= ', 0, -1, {'conceal': g:indentLine_leadingSpaceChar}))
+  call add(w:indentLine_leadingSpaceId, matchadd('Conceal', '\%(^\s*\)\@<= ', 0, -1, {'conceal': g:indentLine_leadingSpaceChar}))
 
-    if exists("w:indentLine_indentLineId") && ! empty(w:indentLine_indentLineId)
-        call s:ResetWidth()
-    endif
+  if exists("w:indentLine_indentLineId") && ! empty(w:indentLine_indentLineId)
+    call s:ResetWidth()
+  endif
 endfunction
 
 "{{{1 function! s:LeadingSpaceDisable()
 function! s:LeadingSpaceDisable()
-    if exists("w:indentLine_leadingSpaceId") && ! empty(w:indentLine_leadingSpaceId)
-        for id in w:indentLine_leadingSpaceId
-            try
-                call matchdelete(id)
-            catch /^Vim\%((\a\+)\)\=:E80[23]/
-            endtry
-        endfor
-        let w:indentLine_leadingSpaceId = []
-    endif
+  if exists("w:indentLine_leadingSpaceId") && ! empty(w:indentLine_leadingSpaceId)
+    for id in w:indentLine_leadingSpaceId
+      try
+        call matchdelete(id)
+      catch /^Vim\%((\a\+)\)\=:E80[23]/
+      endtry
+    endfor
+    let w:indentLine_leadingSpaceId = []
+  endif
 endfunction
 
 "{{{1 function! s:LeadingSpaceToggle()
 function! s:LeadingSpaceToggle()
-    if exists("w:indentLine_leadingSpaceId") && ! empty(w:indentLine_leadingSpaceId)
-        let b:indentLine_leadingSpaceEnabled = 0
-        call s:LeadingSpaceDisable()
-    else
-        let b:indentLine_leadingSpaceEnabled = 1
-        call s:LeadingSpaceEnable()
-    endif
+  if exists("w:indentLine_leadingSpaceId") && ! empty(w:indentLine_leadingSpaceId)
+    let b:indentLine_leadingSpaceEnabled = 0
+    call s:LeadingSpaceDisable()
+  else
+    let b:indentLine_leadingSpaceEnabled = 1
+    call s:LeadingSpaceEnable()
+  endif
 endfunction
 
 "{{{1 augroup indentLine
 augroup indentLine
-    autocmd!
-    autocmd BufRead,BufNewFile,ColorScheme,Syntax * call s:InitColor()
-    if exists("##WinNew")
-        autocmd WinNew * call s:Setup()
-    endif
-    autocmd BufWinEnter * call s:IndentLinesDisable() | call s:LeadingSpaceDisable() | call s:Setup()
-    autocmd FileType * call s:Disable()
-    if exists("##OptionSet")
-        autocmd OptionSet diff call s:ToggleOnDiff()
-        autocmd OptionSet shiftwidth,tabstop noautocmd call s:AutoResetWidth()
-    endif
-    autocmd VimEnter * call s:VimEnter()
+  autocmd!
+  autocmd BufRead,BufNewFile,ColorScheme,Syntax * call s:InitColor()
+  if exists("##WinNew")
+    autocmd WinNew * call s:Setup()
+  endif
+  autocmd BufWinEnter * call s:IndentLinesDisable() | call s:LeadingSpaceDisable() | call s:Setup()
+  autocmd FileType * call s:Disable()
+  if exists("##OptionSet")
+    autocmd OptionSet diff call s:ToggleOnDiff()
+    autocmd OptionSet shiftwidth,tabstop noautocmd call s:AutoResetWidth()
+  endif
+  autocmd VimEnter * call s:VimEnter()
 augroup END
 
 "{{{1 commands
 command! -nargs=? IndentLinesReset call s:ResetWidth(<f-args>)
 command! IndentLinesToggle call s:IndentLinesToggle()
-    command! IndentLinesEnable let b:indentLine_enabled = 1 | call s:IndentLinesEnable()
-    command! IndentLinesDisable let b:indentLine_enabled = 0 | call s:IndentLinesDisable()
-    command! LeadingSpaceEnable let b:indentLine_leadingSpaceEnabled = 1 | call s:LeadingSpaceEnable()
-    command! LeadingSpaceDisable let b:indentLine_leadingSpaceEnabled = 0 | call s:LeadingSpaceDisable()
+command! IndentLinesEnable let b:indentLine_enabled = 1 | call s:IndentLinesEnable()
+command! IndentLinesDisable let b:indentLine_enabled = 0 | call s:IndentLinesDisable()
+command! LeadingSpaceEnable let b:indentLine_leadingSpaceEnabled = 1 | call s:LeadingSpaceEnable()
+command! LeadingSpaceDisable let b:indentLine_leadingSpaceEnabled = 0 | call s:LeadingSpaceDisable()
 command! LeadingSpaceToggle call s:LeadingSpaceToggle()
-
-" vim:et:ts=4:sw=4:fdm=marker:fmr={{{,}}}
