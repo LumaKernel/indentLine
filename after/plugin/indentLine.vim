@@ -94,23 +94,23 @@ function! s:SetConcealOption()
   if !g:indentLine_setConceal
     return
   endif
-  if !(exists("b:indentLine_ConcealOptionSet") && b:indentLine_ConcealOptionSet)
+  if !(exists("b:indentLine_ConcealOptionSet") && b:indentLine_ConcealOptionSet) && &l:conceallevel ==# "0"
     let b:indentLine_ConcealOptionSet = 1
     let b:indentLine_original_conceallevel = &l:conceallevel
-    if b:indentLine_original_conceallevel ==# "0"
-      let &l:conceallevel = "2"
-    endif
+    let b:indentLine_original_concealcursor = &l:concealcursor
+    let &l:conceallevel = "2"
+    let &l:concealcursor = "inc"
   endif
 endfunction
 
 "{{{1 function! s:ResetConcealOption()
 function! s:ResetConcealOption()
   if exists("b:indentLine_ConcealOptionSet") && b:indentLine_ConcealOptionSet
-    if exists("b:indentLine_original_conceallevel")
-          \ && b:indentLine_original_conceallevel ==# "0"
+    if &l:conceallevel ==# "2"
+      let b:indentLine_ConcealOptionSet = 0
       let &l:conceallevel = b:indentLine_original_conceallevel
+      let &l:concealcursor = b:indentLine_original_concealcursor
     endif
-    let b:indentLine_ConcealOptionSet = 0
   endif
 endfunction
 
